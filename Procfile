@@ -1,1 +1,1 @@
-web: service nginx start && uvicorn main:app --host 0.0.0.0 --port 8080
+web: nginx -g "daemon off;" & uvicorn main:app --host 0.0.0.0 --port $PORT
