@@ -1,22 +1,23 @@
-# Use a base image with Nginx
-FROM nginx:alpine
+# Use an official image
+FROM python:3.11
 
-# Copy your custom nginx.conf to the container
-COPY nginx.conf /etc/nginx/nginx.conf
-# Install dependencies for FastAPI
-FROM python:3.11-slim as builder
+# Install Nginx
+RUN apt update && apt install -y nginx
 
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Copy your FastAPI application code into the container
+# Copy the FastAPI application
 COPY . .
 
-# Install necessary Python packages
-RUN pip install -r requirements.txt
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the ports for Nginx and Uvicorn
+# Copy Nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Expose necessary ports
 EXPOSE 80 8080
 
-# Start Nginx and Uvicorn together in the background
-CMD ["sh", "-c", "service nginx start && uvicorn main:app --host 0.0.0.0 --port 8080"]
+# Start Nginx and the FastAPI app
+CMD service nginx start && uvicorn main:app --host 0.0.0.0 --port 8080
