@@ -1,23 +1,23 @@
-# Use a base image with Nginx
-FROM nginx:alpine
-
-# Copy your custom nginx.conf to the container
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Install dependencies for FastAPI
 FROM python:3.11-slim as builder
+
+# Install nginx and supervisor
+RUN apt-get update && apt-get install -y nginx supervisor
 
 # Set working directory
 WORKDIR /app
 
-# Copy your FastAPI application code into the container
-COPY . .
-
 # Install necessary Python packages
+COPY . .
 RUN pip install -r requirements.txt
 
-# Expose the ports for Nginx and Uvicorn
+# Copy nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy supervisor config
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Expose necessary ports
 EXPOSE 80 8080
 
-# Start Nginx and Uvicorn in the same process (no need for 'service')
-CMD nginx -g 'daemon off;' & uvicorn main:app --host 0.0.0.0 --port 8080
+# Start both nginx and uvicorn using supervisord
+CMD ["/usr/bin/supervisord"]
