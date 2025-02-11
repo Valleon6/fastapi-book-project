@@ -19,5 +19,5 @@ RUN pip install -r requirements.txt
 # Expose the ports for Nginx and Uvicorn
 EXPOSE 80 8080
 
-# Start Nginx and Uvicorn together in the background
-CMD ["sh", "-c", "service nginx start && uvicorn main:app --host 0.0.0.0 --port 8080"]
+# Start Nginx and Uvicorn in the same process (no need for 'service')
+CMD nginx -g 'daemon off;' & uvicorn main:app --host 0.0.0.0 --port 8080
