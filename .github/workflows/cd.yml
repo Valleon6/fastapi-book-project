@@ -13,10 +13,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install Railway CLI
-        run: curl -fsSL https://railway.app/install.sh | sh
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
 
-      - name: Deploy to Railway
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up --service fastapi-book-project
+      - name: Deploy to AWS EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no valle@52.35.34.186 << 'EOF'
+            cd /home/valle/fastapi-book-project
+            git pull origin main
+            docker-compose down
+            docker-compose up -d
+          EOF
