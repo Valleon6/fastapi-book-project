@@ -49,10 +49,10 @@ fastapi-book-project/
 
 1. Clone the repository:
 
-1. Clone the repository
-
+```bash
 git clone https://github.com/hng12-devbotops/fastapi-book-project.git
 cd fastapi-book-project
+```
 
 2. Create a virtual environment:
 
@@ -74,22 +74,25 @@ pip install -r requirements.txt
 To run the application locally:
 
 1. Start the FastAPI server
+```bash
 uvicorn main:app --reload
-
+```
 This will start the server on http://localhost:8000
 
-2. Access the API documentation
-	•	Swagger UI: http://localhost:8000/docs
-	•	ReDoc: http://localhost:8000/redoc
+2. Access the API documentation:
 
-API Endpoints
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
 
-Books
-	•	GET /api/v1/books/ - Get all books
-	•	GET /api/v1/books/{book_id} - Get a specific book
-	•	POST /api/v1/books/ - Create a new book
-	•	PUT /api/v1/books/{book_id} - Update a book
-	•	DELETE /api/v1/books/{book_id} - Delete a book
+## API Endpoints
+
+### Books
+
+- `GET /api/v1/books/` - Get all books
+- `GET /api/v1/books/{book_id}` - Get a specific book
+- `POST /api/v1/books/` - Create a new book
+- `PUT /api/v1/books/{book_id}` - Update a book
+- `DELETE /api/v1/books/{book_id}` - Delete a book
 
 ### Health Check
 
@@ -134,11 +137,11 @@ The API includes proper error handling for:
 ## Contributing
 
 To contribute to this project:
-	1.	Fork the repository
-	2.	Create a feature branch (git checkout -b feature/AmazingFeature)
-	3.	Commit your changes (git commit -m 'Add AmazingFeature')
-	4.	Push to the branch (git push origin feature/AmazingFeature)
-	5.	Open a pull request
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 Deployment Instructions
 
@@ -158,7 +161,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
 
 2. Build the Docker Image
 
@@ -166,9 +169,9 @@ docker build -t fastapi-book-api .
 
 3. Run the Docker Container
 
-docker run -d -p 8000:8000 fastapi-book-api
+docker run -d -p 8080:8080 fastapi-book-api
 
-Now, your API should be running on http://localhost:8000.
+Now, your API should be running on http://localhost:8080.
 
 4. (Optional) Deploy to a Cloud Provider
 	•	If deploying to AWS, GCP, or Azure, ensure the required environment variables and networking settings are configured.
