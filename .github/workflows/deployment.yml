@@ -1,32 +1,28 @@
-name: Deployment of FastAPI Book Project
-
+name: Deploy FastAPI Book Project
 on:
   push:
     branches:
-      - main 
-
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Set up Python Env
       uses: actions/setup-python@v3
       with:
         python-version: '3.10'
-
-    - name: Set up SSH agent
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_KEY }}
-
-    - name: Deploy to Azure VM
+    - name: Setup SSH
       run: |
-        ssh -o StrictHostKeyChecking=no blessing@${{ secrets.SEVER_IP }} 
-        cd /home/blessing/fastapi-book-project
-        git pull origin main
-        source venv/bin/activate
-        pip install -r requirements.txt
-        sudo systemctl restart fastapi
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/blessing-azure.pem
+        chmod 600 ~/.ssh/blessing-azure.pem
+    - name: Deploy to Azure
+      run: |
+        ssh -o StrictHostKeyChecking=no -i ~/.ssh/blessing-azure.pem blessing@${{ secrets.SERVER_IP }} << 'EOF'
+            cd /home/blessing/fastapi-book-project
+            git pull origin main
+            source venv/bin/activate
+            pip install -r requirements.txt
+            sudo systemctl restart fastapi
