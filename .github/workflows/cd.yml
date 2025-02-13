@@ -30,3 +30,13 @@ jobs:
             echo "Starting new containers..."
             docker-compose up -d
           EOF
+
+      - name: Verify Deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no vall@52.35.34.186 << 'EOF'
+            set -e
+            echo "Verifying containers are running..."
+            docker ps --filter "name=fastapi" --format "{{.Status}}" | grep -q "Up"
+            docker ps --filter "name=nginx" --format "{{.Status}}" | grep -q "Up"
+            echo "Containers are running!"
+          EOF
