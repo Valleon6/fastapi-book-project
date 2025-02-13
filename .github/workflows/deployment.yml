@@ -1,28 +1,42 @@
-name: Deploy FastAPI Book Project
+name: CD Pipeline
+
 on:
   push:
     branches:
       - main
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Set up Python Env
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.10'
-    - name: Setup SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_KEY }}" > ~/.ssh/blessing-azure.pem
-        chmod 600 ~/.ssh/blessing-azure.pem
-    - name: Deploy to Azure
-      run: |
-        ssh -o StrictHostKeyChecking=no -i ~/.ssh/blessing-azure.pem blessing@${{ secrets.SERVER_IP }} << 'EOF'
-            cd /home/blessing/fastapi-book-project
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.AWS_SSH_PRIVATE_KEY }}
+
+      - name: Deploy to AWS EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no vall@52.35.34.186 << 'EOF'
+            set -e
+            cd /home/vall/fastapi-book-project
+            echo "Pulling latest code..."
             git pull origin main
-            source venv/bin/activate
-            pip install -r requirements.txt
-            sudo systemctl restart fastapi
+            echo "Stopping existing containers..."
+            docker-compose down
+            echo "Starting new containers..."
+            docker-compose up -d
+          EOF
+
+      - name: Verify Deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no vall@52.35.34.186 << 'EOF'
+            set -e
+            echo "Verifying containers are running..."
+            docker ps --filter "name=fastapi" --format "{{.Status}}" | grep -q "Up"
+            docker ps --filter "name=nginx" --format "{{.Status}}" | grep -q "Up"
+            echo "Containers are running!"
+          EOF
