@@ -20,7 +20,7 @@ jobs:
 
       - name: Deploy to AWS EC2
         run: |
-          ssh -o StrictHostKeyChecking=no valle@52.35.34.186 << 'EOF'
+          ssh -o StrictHostKeyChecking=no vall@52.35.34.186 << 'EOF'
             cd /home/valle/fastapi-book-project
             git pull origin main
             docker-compose down
