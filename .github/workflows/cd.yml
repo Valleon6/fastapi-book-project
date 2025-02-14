@@ -23,8 +23,10 @@ jobs:
           ssh -o StrictHostKeyChecking=no vall@52.35.34.186 << 'EOF'
             set -e
             cd /home/vall/fastapi-book-project
-            echo "Pulling latest code..."
-            git pull origin main
+            echo "Fetching latest code..."
+            git fetch origin main
+            echo "Resetting to origin/main..."
+            git reset --hard origin/main
             echo "Stopping existing containers..."
             docker-compose down
             echo "Starting new containers..."
